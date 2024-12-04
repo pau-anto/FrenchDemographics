@@ -43,6 +43,11 @@ Annees = pd.DataFrame(columns=["anneeInf", "anneeSup"])
 Annees["anneeInf"] = [1968, 1975, 1982, 1990, 1999, 2009, 2014]
 Annees["anneeSup"] = [1975, 1982, 1990, 1999, 2009, 2014, 2020]
 
+histPop.columns = ["CODGEO", "20_POP", "14_POP", "09_POP", "99_POP", "90_POP", "82_POP", "75_POP", "68_POP", "SUPERF",
+                   "NAIS1420", "NAIS0914", "NAIS9909", "NAIS9099", "NAIS8290", "NAIS7582", "NAIS6875",
+                   "DECE1420", "DECE0914", "DECE9909", "DECE9099", "DECE8290", "DECE7582", "DECE6875", 
+                   "20_LOG", "14_LOG", "09_LOG", "99_LOG", "90_LOG", "82_LOG", "75_LOG", "68_LOG"]
+
 log("Preparing Statistiques data...")
 statistiques_data = []
 for anneeInf, anneeSup in Annees.values:
@@ -91,7 +96,7 @@ def getNvalidate(argv):
         raise ValueError(f"Unsupported database DataBase '{dtb}'. Supported DataBases are: {', '.join(dtb_mapping.keys())}")
     return usr, passw, host, dtb_mapping[dtb]
 
-usr, passw, host, dtb = getNvalidate(argv)
+usr, passw, host, dtb = getNvalidate(argv[1:])
 
 log("Creating database engine...")
 eng = create_engine(f"{dtb}://{usr}:{passw}@{host}/Statistiques")
