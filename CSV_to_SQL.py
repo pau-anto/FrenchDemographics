@@ -82,28 +82,21 @@ Statistiques.columns = [col[0] if isinstance(col, tuple) else col for col in Sta
 Statistiques.replace(-1, nan, inplace=True)
 
 def getNvalidate(argv):
-    dtb_mapping = {
-        "mysql": "mysql+mysqlconnector",
-        "postgresql": "postgresql",
-        "sqlite": "sqlite",
-        "mssql": "mssql+pyodbc"}
-    if len(argv) < 4:
-        raise ValueError("Insufficient arguments. Expected format: <username> <password> <host> <database_dialect>")
-    usr, passw, host, dtb = argv[:4]
-    if not usr or not passw or not host or not dtb:
+    if len(argv) != 3:
+        raise ValueError("Wrong amount of arguments. Expected format: <username> <password> <host>")
+    usr, passw, host = argv[:3]
+    if not usr or not passw or not host:
         raise ValueError("None of the arguments can be empty.")
-    if dtb not in dtb_mapping:
-        raise ValueError(f"Unsupported database DataBase '{dtb}'. Supported DataBases are: {', '.join(dtb_mapping.keys())}")
-    return usr, passw, host, dtb_mapping[dtb]
+    return usr, passw, host
 
-usr, passw, host, dtb = getNvalidate(argv[1:])
+usr, passw, host = getNvalidate(argv[1:])
 
 log("Creating database engine...")
-eng = create_engine(f"{dtb}://{usr}:{passw}@{host}/Statistiques")
+eng = create_engine(f"mysql+mysqlconnector://{usr}:{passw}@{host}/Statistiques")
 
 log("Writing data into database...")
 for table_name, df in [("Regions", Regions), ("Departements", Departements), 
-                       ("Communes", Communes), ("Annees", Annees), ("Statistiques", Statistiques)]:
+                       ("Communes", Communes), ("Statistiques", Statistiques)]:
     log(f"Writing table '{table_name}' to the database...")
     df.to_sql(name=table_name, con=eng, if_exists="append", index=False)
 
